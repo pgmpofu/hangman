@@ -1,0 +1,106 @@
+/* @author Patience Mpofu
+* @date 27 July 2020
+* hangman.js
+* A simple game of hangman
+*/
+
+.keyboard {
+  font-family: fantasy;
+  font-weight: bold;
+  border-radius: 8px;
+  font-size: large;
+  margin: 12px;
+  padding: 12px;
+  background-color:#3385ff;
+  color: white;
+}
+
+.stats {
+  font-family: fantasy;
+  font-size: large;
+
+}
+
+/* .stats-val {
+  font-family: fantasy;
+  font-size: large;
+} */
+
+.hint {
+  text-align: center;
+  width: 50%;
+  position: absolute;
+  top: 200px;
+  left: 300px;
+}
+
+h1 {
+  font-family: fantasy;
+  text-align: center;
+  margin: 24px;
+}
+
+h3 {
+  font-family: fantasy;
+  text-align: center;
+}
+
+a {
+  position: absolute;
+  top: 640px;
+  left: 150px;
+  font-family: fantasy;
+}
+
+span {
+  font-size: large;
+  font-family: fantasy;
+  text-align: right;
+  margin-right: 16px;;
+}
+
+.stats {
+  text-align: right;
+  margin-right: 40px;
+  margin-top: 24px;
+}
+
+#start {
+    font-family: fantasy;
+    padding: 4px;
+    color: white;
+    background-color:#6699ff;
+    font-size: 24px;
+    border-radius: 8px;
+    position: absolute;
+    top: 260px;
+    left: 580px;
+  }
+
+#hint {
+  font-family: fantasy;
+  padding: 4px;
+  color: white;
+  background-color:gray;
+  font-size: 24px;
+  border-radius: 8px;
+  position: absolute;
+  top: 260px;
+  left: 680px;
+}
+
+#qwerty {
+  position: absolute;
+  top: 350px;
+  left: 400px;
+}
+
+#word_input {
+  text-decoration: none;
+  padding: 4px;
+  margin-bottom: 8px;
+  width: 500px;
+  border: none;
+  font-size: xx-large;
+  text-align: center;
+}

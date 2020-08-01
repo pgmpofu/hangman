@@ -1,0 +1,77 @@
+<!-- @author Patience Mpofu 
+* @date 27 July 2020
+* hangman.js
+* A simple game of hangman 
+* Sound media downloaded from https://www.freesoundslibrary.com/-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hangman</title>
+        <meta charset="UTF-8">
+        <meta description="A simple game of hangman">
+        <meta author="Patience Mpofu">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="CSS/hangman.css" />
+        <script src="JS/hangman.js" type="text/javascript" defer></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <h1>Hangman : A Simple Word Game</h1>
+        <h3>The objective of this game is to guess the word based on the number of letters presented</h3>
+        <div class="stats">
+            <span>Score:</span>
+            <span id="score">0</span>
+        </div>
+        <br />
+        <div class="stats">
+            <span>Word Count:</span>
+            <span>0</span>
+        </div>
+        <br />
+        <div class="stats">
+            <span>Seconds left: </span>
+            <span id="time">30</span><br />
+        </div>
+        <section class="hint" id="word_input_section">
+            <input type="text" value="_ _ _ _ _ _ _ _ _" id="word_input" />
+        </section>
+        <input type="button" value="Start" id="start" />
+        <input type="button" value="Hint" id="hint" />
+        <section>
+            <img src="Images/1.png" alt="first picture of gallows" width="20%" height="350px" />
+            <a href="https://medium.com/@ssaurel/develop-a-hangman-game-for-android-7794420c11bf">Source</a>
+        </section>
+        <section id="qwerty">
+            <input type="button" id="A" value="A" class="keyboard" />
+            <input type="button" id="B" value="B" class="keyboard" />
+            <input type="button" id="C" value="C" class="keyboard" />
+            <input type="button" id="D" value="D" class="keyboard" />
+            <input type="button" id="E" value="E" class="keyboard" />
+            <input type="button" id="F" value="F" class="keyboard" />
+            <input type="button" id="G" value="G" class="keyboard" />
+            <input type="button" id="H" value="H" class="keyboard" />
+            <input type="button" id="I" value="I" class="keyboard" />
+            <br />
+            <br />
+            <input type="button" id="J" value="J" class="keyboard" />
+            <input type="button" id="K" value="K" class="keyboard" />
+            <input type="button" id="L" value="L" class="keyboard" />
+            <input type="button" id="M" value="M" class="keyboard" />
+            <input type="button" id="N" value="N" class="keyboard" />
+            <input type="button" id="O" value="O" class="keyboard" />
+            <input type="button" id="P" value="P" class="keyboard" />
+            <input type="button" id="Q" value="Q" class="keyboard" />
+            <input type="button" id="R" value="R" class="keyboard" />
+            <br />
+            <br />
+            <input type="button" id="S" value="S" class="keyboard" />
+            <input type="button" id="T" value="T" class="keyboard" />
+            <input type="button" id="U" value="U" class="keyboard" />
+            <input type="button" id="V" value="V" class="keyboard" />
+            <input type="button" id="W" value="W" class="keyboard" />
+            <input type="button" id="X" value="X" class="keyboard" />
+            <input type="button" id="Y" value="Y" class="keyboard" />
+            <input type="button" id="Z" value="Z" class="keyboard" />
+        </section>
+    </body>
+</html>
