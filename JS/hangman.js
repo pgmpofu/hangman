@@ -14,7 +14,7 @@ var reserved_words = [
     "mechanism",
     "broadcast",
     "conductor",
-    "heightened",
+    "favorable",
     "rebellious",
     "behaviour",
     "paralyzed",
@@ -57,6 +57,7 @@ var clockAudio = new Audio("Media/Audio/ticking.mp3");
 var failAudio = new Audio("Media/Audio/fail.mp3");
 var overAudio = new Audio("Media/Audio/over.mp3");
 var successAudio = new Audio("Media/Audio/success.mp3");
+var winAudio = new Audio("Media/Audio/win.mp3");
 
 //Variables to manipulate
 let startButton = document.getElementById("start");
@@ -116,10 +117,9 @@ function playGame() {
     if (startButton.value) {
         //Disable button so user doesnt keep starting the game
         startButton.disabled = true;
+
         //Get word
-        word = getWord();
-            
-        console.log(word);
+        word = getWord();  
         wordCounter++;
         clockAudio.play();
 
@@ -132,6 +132,15 @@ function playGame() {
                 successAudio.pause();
                 overAudio.play();
                 startButton.disabled = false;
+                alert("Game Over!");
+            }
+            
+            if(charCount == 9 && time_left >= 0) {
+              clearInterval(showTime);
+              scoreCount++;
+              score.textContent = scoreCount;
+              winAudio.play();
+              alert("You win");
             }
 
             time.textContent = time_left;
@@ -139,7 +148,6 @@ function playGame() {
         }, 1000);
     }
     wordCount.textContent = wordCounter;
-    score.textContent = scoreCount;
 }
 
 function getWord() {
@@ -852,8 +860,10 @@ function validateKeyZ() {
 function showHint() {
   for(var i = 0; i < 9; i++) {
     if(document.getElementById(i.toString()).value == null || document.getElementById(i.toString()).value == "") {
-      document.getElementById(i.toString()).value = word[i];
+      document.getElementById(i.toString()).value = word[i].toUpperCase();
       break;
     }
   }
+  charCount++;
+  hintButton.disabled = true;
 }

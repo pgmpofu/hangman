@@ -75,6 +75,33 @@ span {
   margin-top: 24px;
 }
 
+@media screen and (max-width: 1441px) {
+  h1, h3, span {
+    font-size: small;
+  }
+
+  h1 {
+    font-weight: bolder;
+  }
+
+  a {
+    position: absolute;
+    left: 18px;
+  }
+
+  span {
+    text-align: left;
+    position: absolute;
+    left: 24px;
+  }
+
+  #startButton, #hintButton {
+    position: absolute;
+    top: 500px;
+  }
+
+}
+
 #start {
     font-family: fantasy;
     padding: 4px;
