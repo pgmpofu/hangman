@@ -76,23 +76,15 @@ span {
 }
 
 @media screen and (max-width: 1441px) {
-  h1, h3, span {
-    font-size: small;
-  }
 
-  h1 {
-    font-weight: bolder;
+  .stats {
+    text-align: left;
   }
 
   a {
     position: absolute;
     left: 18px;
-  }
-
-  span {
-    text-align: left;
-    position: absolute;
-    left: 24px;
+    top: 800px;
   }
 
   #startButton, #hintButton {
