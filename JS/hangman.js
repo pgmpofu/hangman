@@ -7,16 +7,21 @@
 //Data store for words to use as a backup in case we cannot reach Words API
 var alphabet = "abcdefghijklmnopqrstuvwxyz";
 var reserved_words = [
-  "exemption",
-  "housewife",
-  "vegetable",
-  "mathematics",
-  "mechanism",
-  "broadcast",
-  "heavenly",
-  "heightened",
-  "rebellious",
-  "behaviour",
+    "exemption",
+    "housewife",
+    "vegetable",
+    "objective",
+    "mechanism",
+    "broadcast",
+    "conductor",
+    "heightened",
+    "rebellious",
+    "behaviour",
+    "paralyzed",
+    "dimension",
+    "machinery",
+    "available",
+    "courtship",
 ];
 
 //Find keyboard elements
@@ -55,571 +60,800 @@ var successAudio = new Audio("Media/Audio/success.mp3");
 
 //Variables to manipulate
 let startButton = document.getElementById("start");
+let hintButton = document.getElementById("hint");
 let score = document.getElementById("score");
 let wordCount = document.getElementById("wordCount");
 let time = document.getElementById("time");
-let inputBox = document.getElementById("word_input");
-var word = null;
+let input1 = document.getElementById("1");
+let input2 = document.getElementById("2");
+let input3 = document.getElementById("3");
+let input4 = document.getElementById("4");
+let input5 = document.getElementById("5");
+let input6 = document.getElementById("6");
+let input7 = document.getElementById("7");
+let input8 = document.getElementById("8");
+let input9 = document.getElementById("9");
+let image = document.getElementById("gallows");
+
+var imageCount = 1;
+var wordCounter = 0;
+var word = "";
+var time_left = time.textContent;
+var charCount = 0;
+var scoreCount = 0;
 
 //Add event listeners
 startButton.addEventListener("click", playGame);
-keyA.addEventListener("click", validateGuess);
-keyB.addEventListener("click", validateGuess);
-keyC.addEventListener("click", validateGuess);
-keyD.addEventListener("click", validateGuess);
-keyE.addEventListener("click", validateGuess);
-keyF.addEventListener("click", validateGuess);
-keyH.addEventListener("click", validateGuess);
-keyI.addEventListener("click", validateGuess);
-keyJ.addEventListener("click", validateGuess);
-keyK.addEventListener("click", validateGuess);
-keyL.addEventListener("click", validateGuess);
-keyM.addEventListener("click", validateGuess);
-keyN.addEventListener("click", validateGuess);
-keyO.addEventListener("click", validateGuess);
-keyP.addEventListener("click", validateGuess);
-keyQ.addEventListener("click", validateGuess);
-keyR.addEventListener("click", validateGuess);
-keyS.addEventListener("click", validateGuess);
-keyT.addEventListener("click", validateGuess);
-keyU.addEventListener("click", validateGuess);
-keyV.addEventListener("click", validateGuess);
-keyW.addEventListener("click", validateGuess);
-keyX.addEventListener("click", validateGuess);
-keyY.addEventListener("click", validateGuess);
-keyZ.addEventListener("click", validateGuess);
-
-//setting to retrieve word from words API
-var settings = {
-  async: false,
-  crossDomain: true,
-  url: "https://wordsapiv1.p.rapidapi.com/words/?random=true",
-  method: "GET",
-  headers: {
-    "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
-    "x-rapidapi-key": "cfa6f87107mshd25f9d50ca8d5afp1982f8jsndff3b4de248d",
-  },
-};
+hintButton.addEventListener("click", showHint);
+keyA.addEventListener("click", validateKeyA);
+keyB.addEventListener("click", validateKeyB);
+keyC.addEventListener("click", validateKeyC);
+keyD.addEventListener("click", validateKeyD);
+keyE.addEventListener("click", validateKeyE);
+keyF.addEventListener("click", validateKeyF);
+keyG.addEventListener("click", validateKeyG);
+keyH.addEventListener("click", validateKeyH);
+keyI.addEventListener("click", validateKeyI);
+keyJ.addEventListener("click", validateKeyJ);
+keyK.addEventListener("click", validateKeyK);
+keyL.addEventListener("click", validateKeyL);
+keyM.addEventListener("click", validateKeyM);
+keyN.addEventListener("click", validateKeyN);
+keyO.addEventListener("click", validateKeyO);
+keyP.addEventListener("click", validateKeyP);
+keyQ.addEventListener("click", validateKeyQ);
+keyR.addEventListener("click", validateKeyR);
+keyS.addEventListener("click", validateKeyS);
+keyT.addEventListener("click", validateKeyT);
+keyU.addEventListener("click", validateKeyU);
+keyV.addEventListener("click", validateKeyV);
+keyW.addEventListener("click", validateKeyW);
+keyX.addEventListener("click", validateKeyX);
+keyY.addEventListener("click", validateKeyY);
+keyZ.addEventListener("click", validateKeyZ);
 
 function playGame() {
-  if (startButton.value) {
-    //Focus on the input box
-    inputBox.focus();
-    //Play ticking sound
-    while (time.textContent != 0) {
-      if (clockAudio.paused) {
+    if (startButton.value) {
+        //Disable button so user doesnt keep starting the game
+        startButton.disabled = true;
+        //Get word
+        word = getWord();
+            
+        console.log(word);
+        wordCounter++;
         clockAudio.play();
-      }
+
+        //start the counter
+        var showTime = setInterval(function() {
+            if (time_left <= 0 || imageCount == 7) {
+                clearInterval(showTime);
+                clockAudio.pause();
+                failAudio.pause();
+                successAudio.pause();
+                overAudio.play();
+                startButton.disabled = false;
+            }
+
+            time.textContent = time_left;
+            time_left--;
+        }, 1000);
     }
-    startButton.disabled = true;
-
-    //Get word from words API
-    $.ajax(settings).done(function (response) {
-      word = response["word"];
-    });
-
-    //validate word meets our requirements
-    validateWord(word);
-
-    //start a time to check time left to end game
-    var time_left = time.textContent;
-    var showTime = setInterval(function () {
-      console.log(time_left);
-      if (time_left == 0) {
-        clearInterval(showTime);
-      }
-      time.textContent = time_left;
-      time_left--;
-    }, 1000);
-  }
+    wordCount.textContent = wordCounter;
+    score.textContent = scoreCount;
 }
 
-//Choose a random word between 0 and length of data store and use instead
-//Exclude words with a space or hyphen or less than 9 to make the game more interesting
-function validateWord(word) {
-  if (
-    word == "" ||
-    word.indexOf(" ") != -1 ||
-    word.indexOf("-") != -1 ||
-    word.length != 9
-  ) {
-    word =
-      reserved_words[Math.floor(Math.random() * (reserved_words.length - 1))];
-  }
-  console.log(word);
+function getWord() {
+  return reserved_words[Math.floor(Math.random() * (reserved_words.length - 1))];
 }
 
-//Check input against guess word
-function validateGuess() {
-  var newWord = [];
-  validateKeyA(newWord);
-  validateKeyB(newWord);
-  validateKeyC(newWord);
-  validateKeyD(newWord);
-  validateKeyE(newWord);
-  validateKeyF(newWord);
-  validateKeyG(newWord);
-  validateKeyH(newWord);
-  validateKeyI(newWord);
-  validateKeyJ(newWord);
-  validateKeyK(newWord);
-  validateKeyL(newWord);
-  validateKeyM(newWord);
-  validateKeyN(newWord);
-  validateKeyO(newWord);
-  validateKeyP(newWord);
-  validateKeyQ(newWord);
-  validateKeyR(newWord);
-  validateKeyS(newWord);
-  validateKeyT(newWord);
-  validateKeyU(newWord);
-  validateKeyV(newWord);
-  validateKeyW(newWord);
-  validateKeyX(newWord);
-  validateKeyY(newWord);
-  validateKeyZ(newWord);
-  newWord = newWord.join(" ");
-  inputBox.value = newWord;
-}
-
-function validateKeyA(newWord) {
-  if (keyA.value) {
-    if (word.includes(keyA.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyA.value.toLowerCase()) {
-          newWord.push(keyA.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          failAudio.play();
-          newWord.push("_");
+//Validate that the guesses made by the user are correct
+function validateKeyA() {
+    if (keyB.value) {
+        if (!word.includes("a")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "a") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyA.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyB(newWord) {
-  if (keyB.value) {
-    if (word.includes(keyB.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyB.value.toLowerCase()) {
-          newWord.push(keyB.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyB() {
+    if (keyB.value) {
+        if (!word.includes("b")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "b") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyB.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyC(newWord) {
-  if (keyC.value) {
-    if (word.includes(keyC.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyC.value.toLowerCase()) {
-          newWord.push(keyC.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyC() {
+    if (keyC.value) {
+        if (!word.includes("c")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "c") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyC.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyD(newWord) {
-  if (keyD.value) {
-    if (word.includes(keyD.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyD.value.toLowerCase()) {
-          newWord.push(keyD.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyD() {
+    if (keyD.value) {
+        if (!word.includes("d")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "d") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyD.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyE(newWord) {
-  if (keyE.value) {
-    if (word.includes(keyE.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyE.value.toLowerCase()) {
-          newWord.push(keyE.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyE() {
+    if (keyE.value) {
+        if (!word.includes("e")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "e") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyE.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyF(newWord) {
-  if (keyF.value) {
-    if (word.includes(keyF.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyF.value.toLowerCase()) {
-          newWord.push(keyF.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyF() {
+    if (keyF.value) {
+        if (!word.includes("f")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "f") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyF.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyG(newWord) {
-  if (keyG.value) {
-    if (word.includes(keyG.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyG.value.toLowerCase()) {
-          newWord.push(keyG.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyG() {
+    if (keyG.value) {
+        if (!word.includes("g")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "g") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyG.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyH(newWord) {
-  if (keyH.value) {
-    if (word.includes(keyH.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        successAudio.play();
-        if (word[i] == keyH.value.toLowerCase()) {
-          newWord.push(keyH.value);
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyH() {
+    if (keyH.value) {
+        if (!word.includes("h")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "h") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyH.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyI(newWord) {
-  if (keyI.value) {
-    if (word.includes(keyI.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyI.value.toLowerCase()) {
-          newWord.push(keyI.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyI() {
+    if (keyI.value) {
+        if (!word.includes("i")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "i") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyI.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyJ(newWord) {
-  if (keyJ.value) {
-    if (word.includes(keyJ.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyJ.value.toLowerCase()) {
-          newWord.push(keyJ.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyJ() {
+    if (keyJ.value) {
+        if (!word.includes("j")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "j") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyJ.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyK(newWord) {
-  if (keyK.value) {
-    if (word.includes(keyK.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyK.value.toLowerCase()) {
-          newWord.push(keyK.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyK() {
+    if (keyK.value) {
+        if (!word.includes("k")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "k") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyK.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyL(newWord) {
-  if (keyL.value) {
-    if (word.includes(keyL.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyL.value.toLowerCase()) {
-          newWord.push(keyL.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyL() {
+    if (keyL.value) {
+        if (!word.includes("l")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "l") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyL.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyM(newWord) {
-  if (keyM.value) {
-    if (word.includes(keyM.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyM.value.toLowerCase()) {
-          newWord.push(keyM.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyM() {
+    if (keyM.value) {
+        if (!word.includes("m")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "m") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyM.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyN(newWord) {
-  if (keyN.value) {
-    if (word.includes(keyN.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyN.value.toLowerCase()) {
-          newWord.push(keyN.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyN() {
+    if (keyN.value) {
+        if (!word.includes("n")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "n") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyN.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyO(newWord) {
-  if (keyO.value) {
-    if (word.includes(keyO.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyO.value.toLowerCase()) {
-          newWord.push(keyO.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyO() {
+    if (keyO.value) {
+        if (!word.includes("o")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "o") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyO.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyP(newWord) {
-  if (keyP.value) {
-    if (word.includes(keyP.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyP.value.toLowerCase()) {
-          newWord.push(keyP.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyP() {
+    if (keyP.value) {
+        if (!word.includes("p")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "p") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyP.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyQ(newWord) {
-  if (keyQ.value) {
-    if (word.includes(keyQ.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyQ.value.toLowerCase()) {
-          newWord.push(keyQ.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyQ() {
+    if (keyQ.value) {
+        if (!word.includes("q")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "q") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyQ.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyR(newWord) {
-  if (keyR.value) {
-    if (word.includes(keyR.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyR.value.toLowerCase()) {
-          newWord.push(keyR.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyR() {
+    if (keyR.value) {
+        if (!word.includes("r")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "r") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyR.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyS(newWord) {
-  if (keyS.value) {
-    if (word.includes(keyS.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyS.value.toLowerCase()) {
-          newWord.push(keyS.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyS() {
+    if (keyS.value) {
+        if (!word.includes("s")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "s") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyS.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyT(newWord) {
-  if (keyT.value) {
-    if (word.includes(keyT.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyT.value.toLowerCase()) {
-          newWord.push(keyT.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyT() {
+    if (keyT.value) {
+        if (!word.includes("t")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "t") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyT.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyU(newWord) {
-  if (keyU.value) {
-    if (word.includes(keyU.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyU.value.toLowerCase()) {
-          newWord.push(keyU.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyU() {
+    if (keyU.value) {
+        if (!word.includes("u")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "u") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyU.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyV(newWord) {
-  if (keyV.value) {
-    if (word.includes(keyV.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyV.value.toLowerCase()) {
-          newWord.push(keyV.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyV() {
+    if (keyV.value) {
+        if (!word.includes("v")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "v") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyV.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyW(newWord) {
-  if (keyW.value) {
-    if (word.includes(keyW.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyW.value.toLowerCase()) {
-          newWord.push(keyW.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyW() {
+    if (keyW.value) {
+        if (!word.includes("w")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "w") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyW.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyX(newWord) {
-  if (keyX.value) {
-    if (word.includes(keyX.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyX.value.toLowerCase()) {
-          newWord.push(keyX.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyX() {
+    if (keyX.value) {
+        if (!word.includes("x")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "x") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyX.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyY(newWord) {
-  if (keyY.value) {
-    if (word.includes(keyY.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyY.value.toLowerCase()) {
-          newWord.push(keyY.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyY() {
+    if (keyY.value) {
+        if (!word.includes("y")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "y") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyY.value;
+                    charCount++;
+                }
+            }
         }
-      }
     }
-  }
 }
 
-function validateKeyZ(newWord) {
-  if (keyZ.value) {
-    if (word.includes(keyZ.value.toLowerCase())) {
-      for (var i = 0; i < word.length; i++) {
-        console.log(word[i]);
-        if (word[i] == keyZ.value.toLowerCase()) {
-          newWord.push(keyZ.value);
-          successAudio.play();
-        } else if (!alphabet.includes(word[i])) {
-          newWord.push("_");
-          failAudio.play();
+function validateKeyZ() {
+    if (keyZ.value) {
+        if (!word.includes("z")) {
+            clockAudio.pause();
+            successAudio.pause();
+            failAudio.play();
+            if (imageCount <= 7) {
+                imageCount++;
+                image.src = "../Images/" + imageCount + ".png";
+            } else {
+                overAudio.play();
+                time.textContent = 0;
+            }
+        } else {
+            for (var i = 0; i < word.length; i++) {
+                if (word[i] == "z") {
+                    clockAudio.pause();
+                    failAudio.pause();
+                    successAudio.play();
+                    document.getElementById(i.toString()).value = keyZ.value;
+                    charCount++;
+                }
+            }
         }
-      }
+    }
+}
+
+function showHint() {
+  for(var i = 0; i < 9; i++) {
+    if(document.getElementById(i.toString()).value == null || document.getElementById(i.toString()).value == "") {
+      document.getElementById(i.toString()).value = word[i];
+      break;
     }
   }
 }

@@ -21,10 +21,20 @@
 
 }
 
-/* .stats-val {
+.letters {
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: black solid 4px;
+  width: 32px;
+  margin: 4px;
+  height: 40px;
+  text-align: center;
+  font-size: larger;
   font-family: fantasy;
-  font-size: large;
-} */
+  padding-bottom: 0px;
+  font-weight: bold;
+}
 
 .hint {
   text-align: center;

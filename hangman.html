@@ -25,7 +25,7 @@
         <br />
         <div class="stats">
             <span>Word Count:</span>
-            <span>0</span>
+            <span id="wordCount">0</span>
         </div>
         <br />
         <div class="stats">
@@ -33,12 +33,22 @@
             <span id="time">30</span><br />
         </div>
         <section class="hint" id="word_input_section">
-            <input type="text" value="_ _ _ _ _ _ _ _ _" id="word_input" />
+            <div>
+            <input type="text" id="0" maxlength="1" readonly class="letters"/>
+            <input type="text" id="1" maxlength="1" readonly class="letters"/>
+            <input type="text" id="2" maxlength="1" readonly class="letters"/>
+            <input type="text" id="3" maxlength="1" readonly class="letters"/>
+            <input type="text" id="4" maxlength="1" readonly class="letters"/>
+            <input type="text" id="5" maxlength="1" readonly class="letters"/>
+            <input type="text" id="6" maxlength="1" readonly class="letters"/>
+            <input type="text" id="7" maxlength="1" readonly class="letters"/>
+            <input type="text" id="8" maxlength="1" readonly class="letters"/>
+            </div>
         </section>
         <input type="button" value="Start" id="start" />
         <input type="button" value="Hint" id="hint" />
         <section>
-            <img src="Images/1.png" alt="first picture of gallows" width="20%" height="350px" />
+            <img id="gallows" src="Images/1.png" alt="first picture of gallows" width="20%" height="350px" />
             <a href="https://medium.com/@ssaurel/develop-a-hangman-game-for-android-7794420c11bf">Source</a>
         </section>
         <section id="qwerty">
